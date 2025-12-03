@@ -6,6 +6,7 @@ interface FormInputProps {
   label: string;
   type?: string;
   value?: string;
+  defaultValue?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   error?: string;
   name?: string;
@@ -19,6 +20,7 @@ const FormInput: React.FC<FormInputProps> = ({
   label,
   type = "text",
   value,
+  defaultValue,
   onChange,
   error,
   name,
@@ -31,7 +33,7 @@ const FormInput: React.FC<FormInputProps> = ({
 
   const inputProps = value !== undefined && onChange !== undefined
     ? { value, onChange }
-    : {};
+    : { defaultValue };
 
   return (
     <div style={{ marginBottom: "1rem" }}>
