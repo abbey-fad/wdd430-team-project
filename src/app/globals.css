@@ -50,7 +50,7 @@ nav {
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-start;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 nav a {
@@ -109,7 +109,7 @@ main div a:hover {
   padding: 1rem;
   background: var(--background);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 form input,
@@ -134,6 +134,17 @@ form button {
 
 form button:hover {
   background-color: var(--primary-dark);
+}
+
+.btn-secondary {
+  background-color: var(--background);
+  color: var(--primary-dark);
+  border: 1px solid var(--primary-dark);
+}
+
+.btn-secondary:hover {
+  background-color: var(--primary-dark);
+  color: var(--background);
 }
 
 textarea {
