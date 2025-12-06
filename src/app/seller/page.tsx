@@ -12,12 +12,25 @@ const initialState: State = {
   success: false,
 };
 
+
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  category: string;
+  images: string[];
+}
+
 const SellerProfilePage: React.FC = () => {
   const router = useRouter();
   const [state, formAction] = useActionState<State, FormData>(saveProfile, initialState);
 
   const [shopName, setShopName] = useState("");
   const [bio, setBio] = useState("");
+
+  const [displayedProfile, setDisplayedProfile] = useState<{ shopName: string; bio: string } | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<{ shopName?: string; bio?: string }>({});
 
@@ -28,6 +41,13 @@ const SellerProfilePage: React.FC = () => {
         if (profile) {
           setShopName(profile.shopName);
           setBio(profile.bio);
+          setDisplayedProfile({
+            shopName: profile.shopName,
+            bio: profile.bio
+          });
+          if (profile.products) {
+            setProducts(profile.products);
+          }
         }
       } catch (error) {
         console.error("Error loading profile:", error);
@@ -41,12 +61,12 @@ const SellerProfilePage: React.FC = () => {
 
   useEffect(() => {
     if (state.success) {
-      const timer = setTimeout(() => {
-        router.push("/products/new");
-      }, 1000);
-      return () => clearTimeout(timer);
+      setDisplayedProfile({
+        shopName: shopName,
+        bio: bio
+      });
     }
-  }, [state.success, router]);
+  }, [state.success, shopName, bio]);
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -80,7 +100,14 @@ const SellerProfilePage: React.FC = () => {
 
   return (
     <div className="form-container">
-      <h1>Seller Profile</h1>
+      {displayedProfile && (
+        <div style={{ marginBottom: "2rem", borderBottom: "1px solid #eee", paddingBottom: "1rem" }}>
+          <h2>{displayedProfile.shopName}</h2>
+          <p style={{ color: "#666" }}>{displayedProfile.bio}</p>
+        </div>
+      )}
+
+      <h1>Edit Profile</h1>
       <form action={handleClientSubmit}>
         <FormInput
           label="Shop Name"
@@ -102,8 +129,53 @@ const SellerProfilePage: React.FC = () => {
         <button type="submit">Save Profile</button>
       </form>
 
-      {state.message && <p style={{ color: "green" }}>{state.message}</p>}
-      {state.error && <p style={{ color: "red" }}>{state.error}</p>}
+      {state.message && <p style={{ color: "green", marginTop: "1rem" }}>{state.message}</p>}
+      {state.error && <p style={{ color: "red", marginTop: "1rem" }}>{state.error}</p>}
+      <div style={{ marginTop: "3rem" }}>
+        <h2>My Products</h2>
+        {products.length === 0 ? (
+          <p>No products listed yet.</p>
+        ) : (
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+            gap: "20px",
+            marginTop: "1rem"
+          }}>
+            {products.map((product) => (
+              <a href={`/products/${product._id}`} key={product._id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <div style={{
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+                  cursor: "pointer",
+                  transition: "transform 0.2s"
+                }}>
+                  <div style={{ height: "200px", overflow: "hidden", position: "relative", backgroundColor: "#f9f9f9" }}>
+                    {product.images?.[0] ? (
+                      <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#aaa" }}>
+                        No Image
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ padding: "10px" }}>
+                    <h3 style={{ fontSize: "1.1rem", margin: "0 0 5px 0" }}>{product.name}</h3>
+                    <p style={{ color: "#555", fontSize: "0.9rem", margin: "0 0 5px 0" }}>{product.category}</p>
+                    <p style={{ fontWeight: "bold", color: "#333", margin: 0 }}>${product.price ? product.price.toFixed(2) : "0.00"}</p>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

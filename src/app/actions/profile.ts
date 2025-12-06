@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import dbConnect from "@/lib/db";
 import Profile from "@/models/profile";
+import Product from "@/models/product";
 import { revalidatePath } from "next/cache";
 
 export type State = {
@@ -54,15 +55,30 @@ export async function getProfile() {
 
         await dbConnect();
 
-        const profile = await Profile.findOne({ sellerId: session.user.id }).lean();
+        const profile = await Profile.findOne({ sellerId: session.user.id })
+            .populate({
+                path: 'products',
+                model: Product,
+                options: { sort: { createdAt: -1 } }
+            })
+            .lean();
 
         if (!profile) {
             return null;
         }
 
+        const products = (profile.products || []).map((p: any) => ({
+            _id: p._id.toString(),
+            name: p.name,
+            price: p.price,
+            category: p.category,
+            images: p.images || [],
+        }));
+
         return {
             shopName: profile.shopName,
             bio: profile.bio,
+            products: products
         };
     } catch (error: any) {
         console.error("Error fetching profile:", error);
