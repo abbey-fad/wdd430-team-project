@@ -46,16 +46,22 @@ export async function saveProfile(prevState: State, formData: FormData): Promise
     }
 }
 
-export async function getProfile() {
+export async function getProfile(profileId?: string) {
     try {
         const session = await auth();
-        if (!session || !session.user || !session.user.id) {
-            return null;
-        }
-
         await dbConnect();
 
-        const profile = await Profile.findOne({ sellerId: session.user.id })
+        let query = {};
+        if (profileId) {
+            query = { _id: profileId };
+        } else {
+            if (!session || !session.user || !session.user.id) {
+                return null;
+            }
+            query = { sellerId: session.user.id };
+        }
+
+        const profile = await Profile.findOne(query)
             .populate({
                 path: 'products',
                 model: Product,
@@ -73,12 +79,19 @@ export async function getProfile() {
             price: p.price,
             category: p.category,
             images: p.images || [],
+            profileId: p.profileId.toString()
         }));
 
+        const currentUserId = session?.user?.id;
+        const isOwner = currentUserId && profile.sellerId.toString() === currentUserId;
+
         return {
+            _id: profile._id.toString(),
+            sellerId: profile.sellerId.toString(),
             shopName: profile.shopName,
             bio: profile.bio,
-            products: products
+            products: products,
+            isOwner: !!isOwner
         };
     } catch (error: any) {
         console.error("Error fetching profile:", error);

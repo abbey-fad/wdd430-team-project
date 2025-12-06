@@ -1,5 +1,3 @@
-
-import React from "react";
 import { notFound } from "next/navigation";
 import { getProductById, updateProduct } from "../../actions/product";
 import ProductForm from "../../../components/ProductForm";
@@ -32,8 +30,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
     return (
         <div style={{ maxWidth: "800px", margin: "2rem auto", padding: "0 1rem" }}>
-            <Link href={isOwner ? "/seller" : "/"} style={{ display: "inline-block", marginBottom: "1rem" }}>
-                &larr; {isOwner ? "Back to Profile" : "Back Home"}
+            <Link href={isOwner ? "/seller" : `/seller/${product.profileId}`} style={{ display: "inline-block", marginBottom: "1rem" }}>
+                &larr; {isOwner ? "Back to Profile" : "To Seller's Profile"}
             </Link>
 
             <div style={{ marginBottom: "3rem" }}>

@@ -6,7 +6,7 @@ export const authConfig = {
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
             const pathname = nextUrl.pathname;
-            const isProtected = pathname.startsWith("/seller") || pathname.startsWith("/products/new");
+            const isProtected = (pathname === "/seller") || pathname.startsWith("/products/new");
             if (isProtected) return isLoggedIn;
             return true;
         },
