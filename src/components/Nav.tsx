@@ -1,13 +1,22 @@
 "use client";
 import Link from "next/link";
-import "./globals.css"; // Make sure your CSS variables are imported
+import { logout } from "@/app/actions/auth";
 
-export default function Nav() {
+export default function Nav({ user }: { user: any }) {
   return (
     <nav className="main-nav">
       <Link href="/">Home</Link>
-      <Link href="/seller">Seller</Link>
-      <Link href="/products/new">Add Product</Link>
+      {user ? (
+        <>
+          <Link href="/seller">Seller Profile</Link>
+          <Link href="/products/new">Add Product</Link>
+          <button onClick={() => logout()} className="logout-button">
+            Logout
+          </button>
+        </>
+      ) : (
+        <Link href="/login">Login</Link>
+      )}
     </nav>
   );
 }

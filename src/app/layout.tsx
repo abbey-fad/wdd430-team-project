@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
+import Nav from "@/components/Nav";
+import { auth } from "@/auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,22 +20,18 @@ export const metadata: Metadata = {
   description: "Platform for artisans to showcase their products",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-return (
-  <html lang="en">
-    <body className={`${geistSans.variable} ${geistMono.variable}`}>
-      <nav className="main-nav">
-        <Link href="/">Home</Link>
-        <Link href="/seller">Seller</Link>
-        <Link href="/products/new">Add Product</Link>
-      </nav>
-      {children}
-    </body>
-  </html>
-);
-  
+  const session = await auth();
+  return (
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <Nav user={session?.user} />
+        {children}
+      </body>
+    </html>
+  );
 }

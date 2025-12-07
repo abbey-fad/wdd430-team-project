@@ -6,7 +6,7 @@ import dbConnect from "@/lib/db";
 import Seller from "@/models/user";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { signIn } from "@/auth";
+import { signIn, signOut } from "@/auth";
 
 const RegisterSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -74,4 +74,9 @@ export async function authenticate(
         }
         throw error;
     }
+}
+
+export async function logout() {
+    await signOut({ redirectTo: "/" });
+    revalidatePath("/");
 }
