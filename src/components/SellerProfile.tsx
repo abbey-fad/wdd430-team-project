@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useActionState } from "react";
 import FormInput from "./FormInput";
+import ProductCard from "./ProductCard";
 import { useRouter } from "next/navigation";
 import { saveProfile, getProfile, State } from "../app/actions/profile";
 import { Skeleton } from "./Skeleton";
@@ -146,42 +147,16 @@ const SellerProfile: React.FC<SellerProfileProps> = ({ profileId }) => {
                 {products.length === 0 ? (
                     <p>No products listed yet.</p>
                 ) : (
-                    <div style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-                        gap: "20px",
-                        marginTop: "1rem"
-                    }}>
+                    <div className="product-grid" style={{ marginTop: "1rem" }}>
                         {products.map((product) => (
-                            <a href={`/products/${product._id}`} key={product._id} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                <div style={{
-                                    border: "1px solid #ddd",
-                                    borderRadius: "8px",
-                                    overflow: "hidden",
-                                    boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-                                    cursor: "pointer",
-                                    transition: "transform 0.2s"
-                                }}>
-                                    <div style={{ height: "200px", overflow: "hidden", position: "relative", backgroundColor: "#f9f9f9" }}>
-                                        {product.images?.[0] ? (
-                                            <img
-                                                src={product.images[0]}
-                                                alt={product.name}
-                                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                            />
-                                        ) : (
-                                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#aaa" }}>
-                                                No Image
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div style={{ padding: "10px" }}>
-                                        <h3 style={{ fontSize: "1.1rem", margin: "0 0 5px 0" }}>{product.name}</h3>
-                                        <p style={{ color: "#555", fontSize: "0.9rem", margin: "0 0 5px 0" }}>{product.category}</p>
-                                        <p style={{ fontWeight: "bold", color: "#333", margin: 0 }}>${product.price ? product.price.toFixed(2) : "0.00"}</p>
-                                    </div>
-                                </div>
-                            </a>
+                            <ProductCard
+                                key={product._id}
+                                id={product._id}
+                                name={product.name}
+                                price={product.price}
+                                image={product.images?.[0]}
+                                category={product.category}
+                            />
                         ))}
                     </div>
                 )}

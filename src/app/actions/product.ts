@@ -91,6 +91,27 @@ export async function getProductById(id: string) {
     }
 }
 
+
+export async function getAllProducts() {
+    try {
+        await dbConnect();
+        const products = await Product.find({}).sort({ createdAt: -1 }).lean();
+
+        return products.map(product => ({
+            _id: product._id.toString(),
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            category: product.category,
+            images: product.images || [],
+            profileId: product.profileId.toString(),
+        }));
+    } catch (error) {
+        console.error("Error fetching all products:", error);
+        return [];
+    }
+}
+
 export async function updateProduct(prevState: State, formData: FormData): Promise<State> {
     try {
         const session = await auth();
