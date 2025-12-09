@@ -1,5 +1,34 @@
 import mongoose from "mongoose";
 
+const ReviewSchema = new mongoose.Schema(
+    {
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Seller",
+            required: false,
+        },
+        name: {
+            type: String,
+            required: true,
+        },
+        rating: {
+            type: Number,
+            required: true,
+        },
+        comment: {
+            type: String,
+            required: true,
+        },
+        userImage: {
+            type: String,
+            required: false,
+        },
+    },
+    {
+        timestamps: true,
+    }
+);
+
 const ProductSchema = new mongoose.Schema(
     {
         name: {
@@ -29,6 +58,17 @@ const ProductSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Profile",
             required: true,
+        },
+        reviews: [ReviewSchema],
+        rating: {
+            type: Number,
+            required: true,
+            default: 0,
+        },
+        numReviews: {
+            type: Number,
+            required: true,
+            default: 0,
         },
     },
     {

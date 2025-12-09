@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getProductById, updateProduct } from "../../actions/product";
 import ProductForm from "../../../components/ProductForm";
 import Link from "next/link";
+import ReviewForm from "../../../components/ReviewForm";
 import { auth } from "@/auth";
 
 
@@ -81,6 +82,45 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                     </div>
                 </>
             )}
+
+            <hr style={{ margin: "3rem 0", borderTop: "1px solid #ddd" }} />
+
+            <div style={{ marginBottom: "3rem" }}>
+                <h2 style={{ marginBottom: "1.5rem" }}>Reviews ({product.numReviews || 0})</h2>
+                <div style={{ marginBottom: "1rem" }}>
+                    <span style={{ fontSize: "1.2rem", fontWeight: "bold", color: "#f39c12" }}>
+                        ★ {product.rating ? product.rating.toFixed(1) : "0.0"}
+                    </span>
+                    <span style={{ color: "#666", marginLeft: "0.5rem" }}>Average Rating</span>
+                </div>
+
+                {product.reviews && product.reviews.length > 0 ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                        {product.reviews.map((review: any, idx: number) => (
+                            <div key={idx} style={{ padding: "1rem", border: "1px solid #eee", borderRadius: "8px", background: "#f9f9f9" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                                    <strong>{review.name}</strong>
+                                    <span style={{ color: "#f39c12" }}>
+                                        {"★".repeat(review.rating)}
+                                        {"☆".repeat(5 - review.rating)}
+                                    </span>
+                                </div>
+                                <p style={{ margin: 0, color: "#333" }}>{review.comment}</p>
+                                <small style={{ color: "#999", display: "block", marginTop: "0.5rem" }}>
+                                    {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : ""}
+                                </small>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p>No reviews yet. Be the first to review!</p>
+                )}
+
+                <ReviewForm
+                    productId={product._id}
+                    currentUser={session?.user && session.user.id ? { id: session.user.id, name: session.user.name } : undefined}
+                />
+            </div>
         </div>
     );
 }

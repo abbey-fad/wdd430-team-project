@@ -84,6 +84,15 @@ export async function getProductById(id: string) {
             category: product.category,
             images: product.images || [],
             profileId: product.profileId.toString(),
+            reviews: product.reviews?.map((review: any) => ({
+                ...review,
+                _id: review._id.toString(),
+                userId: review.userId ? review.userId.toString() : undefined,
+                createdAt: review.createdAt?.toISOString(),
+                updatedAt: review.updatedAt?.toISOString(),
+            })) || [],
+            rating: product.rating || 0,
+            numReviews: product.numReviews || 0,
         };
     } catch (error) {
         console.error("Error fetching product:", error);
@@ -170,5 +179,57 @@ export async function updateProduct(prevState: State, formData: FormData): Promi
     } catch (error: any) {
         console.error("Error updating product:", error);
         return { error: error.message || "Failed to update product", success: false, message: "" };
+    }
+}
+
+export async function createReview(prevState: State, formData: FormData): Promise<State> {
+    try {
+        const productId = formData.get("productId") as string;
+        const rating = Number(formData.get("rating"));
+        const comment = formData.get("comment") as string;
+
+        if (!productId || !rating || !comment) {
+            return { error: "Please provide a rating and comment", success: false, message: "" };
+        }
+
+        await dbConnect();
+
+        const product = await Product.findById(productId);
+        if (!product) {
+            return { error: "Product not found", success: false, message: "" };
+        }
+
+        const session = await auth();
+        let name = formData.get("name") as string;
+        let userId = undefined;
+
+        if (session?.user) {
+            name = session.user.name || "Anonymous User";
+            userId = session.user.id;
+        } else if (!name) {
+            return { error: "Please provide your name", success: false, message: "" };
+        }
+
+        const review = {
+            userId,
+            name,
+            rating,
+            comment,
+        };
+
+        product.reviews.push(review);
+
+        product.numReviews = product.reviews.length;
+        product.rating =
+            product.reviews.reduce((acc: number, item: { rating: number }) => item.rating + acc, 0) /
+            product.reviews.length;
+
+        await product.save();
+        revalidatePath(`/products/${productId}`);
+
+        return { success: true, message: "Review added successfully!", error: "" };
+    } catch (error: any) {
+        console.error("Error creating review:", error);
+        return { error: error.message || "Failed to add review", success: false, message: "" };
     }
 }
