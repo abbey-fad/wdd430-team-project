@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { getAllProducts } from "@/app/actions/product";
 import ProductCard from "@/components/ProductCard";
 import Link from "next/link";
 import Search from "@/components/Search";
+import { useSearchParams } from "next/navigation";
 
 interface Product {
   _id: string;
@@ -16,44 +17,33 @@ interface Product {
   numReviews: number;
 }
 
-// Debounce utility to prevent search from firing too often
-function debounce<T extends (...args: any[]) => void>(func: T, delay: number) {
-  let timeout: NodeJS.Timeout;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), delay);
-  };
-}
-
 export default function HomePage() {
-  const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const searchParams = useSearchParams();
 
-  // Fetch all products on mount
+  // 1️⃣ Read query from URL
+  const query = searchParams.get("query")?.toLowerCase() || "";
+
   useEffect(() => {
     async function fetchProducts() {
       const allProducts = await getAllProducts();
-      setProducts(allProducts);
-      setFilteredProducts(allProducts);
-    }
-    fetchProducts();
-  }, []);
 
-  // Handle search with debounce
-  const handleSearch = useCallback(
-    debounce((query: string) => {
+      // 2️⃣ No search? → Show all
       if (!query) {
-        setFilteredProducts(products);
+        setFilteredProducts(allProducts);
         return;
       }
-      const lowerQuery = query.toLowerCase();
-      const filtered = products.filter((p) =>
-        p.name.toLowerCase().includes(lowerQuery)
+
+      // 3️⃣ Filter by query
+      setFilteredProducts(
+        allProducts.filter((product) =>
+          product.name.toLowerCase().includes(query)
+        )
       );
-      setFilteredProducts(filtered);
-    }, 300),
-    [products]
-  );
+    }
+
+    fetchProducts();
+  }, [query]); // runs every time the URL query changes
 
   return (
     <div>
@@ -66,8 +56,9 @@ export default function HomePage() {
           <Link href="/login">Login</Link>
         </div>
 
+        {/* 4️⃣ Search bar — NO onSearch needed */}
         <div style={{ marginBottom: "1rem" }}>
-          <Search placeholder="Search products..." onSearch={handleSearch} />
+          <Search placeholder="Search products..." />
         </div>
 
         <section className="product-grid">

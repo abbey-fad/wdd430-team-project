@@ -1,45 +1,40 @@
 'use client';
 
-import React, { useState } from "react";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useDebouncedCallback } from "use-debounce";
 
-interface SearchProps {
-  placeholder?: string;
-  initialQuery?: string;
-  onSearch: (query: string) => void; // callback prop
-}
+export default function Search({ placeholder }: { placeholder: string }) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
 
-export default function Search({
-  placeholder,
-  initialQuery = "",
-  onSearch,
-}: SearchProps): JSX.Element {
-  const [term, setTerm] = useState(initialQuery);
+  const handleSearch = useDebouncedCallback((term: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", "1");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTerm(e.target.value);
-  };
+    if (term) {
+      params.set("query", term);
+    } else {
+      params.delete("query");
+    }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") onSearch(term);
-  };
-
-  const handleClick = () => {
-    onSearch(term);
-  };
+    replace(`${pathname}?${params.toString()}`);
+  }, 300);
 
   return (
     <div className="search-container">
+      <div className="icon-container">
+        <MagnifyingGlassIcon className="icon" />
+      </div>
+
       <input
         type="text"
-        placeholder={placeholder || "Search..."}
-        value={term}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        defaultValue={searchParams.get("query") || ""}
+        onChange={(e) => handleSearch(e.target.value)}
         className="search-input"
       />
-      <button onClick={handleClick} className="search-button">
-        Search
-      </button>
     </div>
   );
 }
