@@ -79,7 +79,9 @@ export async function getProfile(profileId?: string) {
             price: p.price,
             category: p.category,
             images: p.images || [],
-            profileId: p.profileId.toString()
+            profileId: p.profileId.toString(),
+            rating: p.rating || 0,
+            numReviews: p.numReviews || 0
         }));
 
         const currentUserId = session?.user?.id;

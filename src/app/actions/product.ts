@@ -114,6 +114,8 @@ export async function getAllProducts() {
             category: product.category,
             images: product.images || [],
             profileId: product.profileId.toString(),
+            rating: product.rating || 0,
+            numReviews: product.numReviews || 0,
         }));
     } catch (error) {
         console.error("Error fetching all products:", error);

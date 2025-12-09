@@ -25,6 +25,8 @@ export default async function Home() {
               price={product.price}
               image={product.images[0]}
               category={product.category}
+              rating={product.rating}
+              numReviews={product.numReviews}
             />
           ))}
         </section>

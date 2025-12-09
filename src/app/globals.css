@@ -283,6 +283,7 @@ textarea {
 
 .product-info {
   padding: 1rem;
+  text-align: center;
 }
 
 .product-title {
@@ -304,4 +305,34 @@ textarea {
   font-weight: bold;
   color: var(--primary);
   font-size: 1.2rem;
+}
+
+.product-category-sm {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #888;
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.5px;
+}
+
+.product-rating-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.rating-star {
+  color: #f39c12;
+}
+
+.rating-text {
+  font-weight: bold;
+  color: var(--foreground);
+}
+
+.review-count {
+  color: #666;
+  font-size: 0.8rem;
 }

@@ -13,6 +13,8 @@ interface Product {
     price: number;
     category: string;
     images: string[];
+    rating: number;
+    numReviews: number;
 }
 
 interface SellerProfileProps {
@@ -156,6 +158,8 @@ const SellerProfile: React.FC<SellerProfileProps> = ({ profileId }) => {
                                 price={product.price}
                                 image={product.images?.[0]}
                                 category={product.category}
+                                rating={product.rating}
+                                numReviews={product.numReviews}
                             />
                         ))}
                     </div>

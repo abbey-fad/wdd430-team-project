@@ -6,9 +6,11 @@ interface ProductCardProps {
     price: number;
     image: string;
     category: string;
+    rating?: number;
+    numReviews?: number;
 }
 
-export default function ProductCard({ id, name, price, image, category }: ProductCardProps) {
+export default function ProductCard({ id, name, price, image, category, rating = 0, numReviews = 0 }: ProductCardProps) {
     return (
         <Link href={`/products/${id}`} className="product-card">
             <div className="product-image-container">
@@ -20,7 +22,12 @@ export default function ProductCard({ id, name, price, image, category }: Produc
             </div>
             <div className="product-info">
                 <h3 className="product-title">{name}</h3>
-                <p className="product-category">{category}</p>
+                <p className="product-category-sm">{category}</p>
+                <div className="product-rating-row">
+                    <span className="rating-star">★</span>
+                    <span className="rating-text">{rating.toFixed(1)}</span>
+                    <span className="review-count">({numReviews})</span>
+                </div>
                 <p className="product-price">${price.toFixed(2)}</p>
             </div>
         </Link>
