@@ -70,6 +70,16 @@ export async function getProfile(profileId?: string) {
             .lean();
 
         if (!profile) {
+            if (!profileId && session?.user?.id) {
+                return {
+                    _id: "",
+                    sellerId: session.user.id,
+                    shopName: "",
+                    bio: "",
+                    products: [],
+                    isOwner: true
+                };
+            }
             return null;
         }
 
