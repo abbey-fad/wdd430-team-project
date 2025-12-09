@@ -50,20 +50,24 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                         ${product.price ? product.price.toFixed(2) : "0.00"}
                     </span>
                 </div>
-
                 <div style={{ marginBottom: "2rem" }}>
                     <p style={{ lineHeight: "1.6", whiteSpace: "pre-wrap" }}>{product.description}</p>
                 </div>
 
                 {product.images && product.images.length > 0 && (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+                    <div style={{ columnCount: 2, columnGap: "1rem" }}>
                         {product.images.map((img: string, idx: number) => (
-                            <img
-                                key={idx}
-                                src={img}
-                                alt={`${product.name} - ${idx + 1}`}
-                                style={{ width: "100%", borderRadius: "8px" }}
-                            />
+                            <div key={idx} style={{ marginBottom: "1rem", breakInside: "avoid" }}>
+                                <img
+                                    src={img}
+                                    alt={`${product.name} - ${idx + 1}`}
+                                    style={{
+                                        width: "100%",
+                                        borderRadius: "8px",
+                                        display: "block"
+                                    }}
+                                />
+                            </div>
                         ))}
                     </div>
                 )}
