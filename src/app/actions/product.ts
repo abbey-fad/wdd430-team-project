@@ -101,10 +101,21 @@ export async function getProductById(id: string) {
 }
 
 
-export async function getAllProducts() {
+export async function getAllProducts(query?: string) {
     try {
         await dbConnect();
-        const products = await Product.find({}).sort({ createdAt: -1 }).lean();
+
+        // If query exists, filter products by name or description (case-insensitive)
+        const filter = query
+            ? {
+                  $or: [
+                      { name: { $regex: query, $options: "i" } },
+                      { description: { $regex: query, $options: "i" } },
+                  ],
+              }
+            : {};
+
+        const products = await Product.find(filter).sort({ createdAt: -1 }).lean();
 
         return products.map(product => ({
             _id: product._id.toString(),
@@ -122,6 +133,7 @@ export async function getAllProducts() {
         return [];
     }
 }
+
 
 export async function updateProduct(prevState: State, formData: FormData): Promise<State> {
     try {
